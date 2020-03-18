@@ -1,23 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Cw3.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cw3.Controllers
-{   
+{
     [ApiController]
     [Route("api/students")]
     
     public class StudentsController : ControllerBase
     {
-        [HttpGet]
-        public string GetStudent(string orderBy)
+        private readonly IDbService _dbService;
+       
+        public StudentsController(IDbService dbService)
         {
-            return $"Kowalski, Malewski, Andrzejewski sortowanie={orderBy}";
+            _dbService = dbService;
+
         }
+        [HttpDelete]
+        public IActionResult DeleteStudent(int id)
+        {
+            return Ok("Usuwanie ukończone");
+        }
+
+        [HttpPut]
+        public IActionResult PutStudent(int id)
+        {
+            return Ok("Aktualizacja dokończona");
+        }
+
+
+        [HttpGet]
+        public IActionResult GetStudents(string orderBy)
+        {
+            return Ok(_dbService.GetStudents());
+       }
+
+       // [HttpGet]
+       // public string GetStudent(string orderBy)
+       // {
+        //    return $"Kowalski, Malewski, Andrzejewski sortowanie={orderBy}";
+       // }
+
 
         [HttpGet("{id}")]
         public IActionResult GetStudent(int id)
@@ -27,10 +50,10 @@ namespace Cw3.Controllers
                 return Ok("Kowalski");
             }else if (id == 2)
             {
-                return Ok(("Malewski"));
+                return Ok("Malewski");
             }
 
-            return NotFound("Nie znaleziono studenta");
+           return NotFound("Nie znaleziono studenta");
         }
 
         [HttpPost]
