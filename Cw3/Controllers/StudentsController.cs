@@ -74,10 +74,17 @@ namespace Cw3.Controllers
             using (var com = new SqlCommand())
             {
                 com.Connection = con;
-                com.CommandText = "select Enrollment.IdEnrollment, Semester, IdStudy,StartDate from Student " +
-                    "inner join Enrollment on Enrollment.IdEnrollment = Student.IdEnrollment" +
-                    $" where IndexNumber={id};";
+                
+                //com.CommandText = "select Enrollment.IdEnrollment, Semester, IdStudy,StartDate from Student " +
+                    //"inner join Enrollment on Enrollment.IdEnrollment = Student.IdEnrollment" +
+                   // $" where IndexNumber={id};";
 
+                //ostatnie zadanie 
+                com.CommandText= "select Enrollment.IdEnrollment, Semester, IdStudy,StartDate from Student " +
+                    "inner join Enrollment on Enrollment.IdEnrollment = Student.IdEnrollment" +
+                    $" where IndexNumber=@id;";
+
+                com.Parameters.AddWithValue("id", id);
                 con.Open();
                 var dr = com.ExecuteReader();
                 
