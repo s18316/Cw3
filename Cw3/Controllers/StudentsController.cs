@@ -1,6 +1,5 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using Cw3.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +53,7 @@ namespace Cw3.Controllers
                     st.FirstName = dr["FirstName"].ToString();
                     st.LastName = dr["LastName"].ToString();
                     st.BirthDate = dr["birthdate"].ToString();
-                    st.StudiesName = dr["name"].ToString();
+                    st.Studies = dr["name"].ToString();
                     st.Semester = dr["semester"].ToString();
 
                     listaStudentow.Add(st);

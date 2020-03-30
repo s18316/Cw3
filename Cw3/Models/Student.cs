@@ -13,6 +13,6 @@ namespace Cw3.Models
         public string IndexNumber { get; set; }
         public string BirthDate { get; set; }
         public string Semester { get; set; }
-        public string StudiesName { get; set; }
+        public string Studies { get; set; }
     }
 }
