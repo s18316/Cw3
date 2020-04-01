@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 using Cw3.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 
 namespace Cw3.Services
 {
@@ -18,15 +12,18 @@ namespace Cw3.Services
             using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18316;Integrated Security=True"))
             using (var com = new SqlCommand())
             {
-                SqlTransaction trans = con.BeginTransaction();
+                SqlTransaction trans = null;
+                Enrollment newEnroll = null;
                 try
                 {
                     Console.WriteLine(studiesName);
-                    com.Connection = con;
+                     com.Connection = con;
+                    con.Open();
+                 trans = con.BeginTransaction();
                     com.CommandText = "Select * from Studies where Studies.Name = @studiesName1;";
                     com.Parameters.AddWithValue("studiesName1", studiesName);
 
-                    con.Open();
+                    
 
                     var ans = com.ExecuteReader();
 
@@ -80,8 +77,20 @@ namespace Cw3.Services
                         DodStudenta(student, com, IdEnrollment);
 
                         ans.Close();
-                        trans.Commit();
-                        con.Close();
+
+                        //odstatni element zadania 1
+                        com.CommandText = "Select * from Enrollment where Enrollment.IdEnrollment = @IdEndrollment";
+                        com.Parameters.AddWithValue("IdEnrollment", IdEnrollment);
+                         newEnroll = new Enrollment();
+                        ans = com.ExecuteReader();
+                        ans.Read();
+                        newEnroll.IdEndrollment = ans[0].ToString();
+                        newEnroll.Semester = ans[1].ToString();
+                        newEnroll.IdStudy = ans[2].ToString();
+                        newEnroll.StartDate = ans[3].ToString();
+
+;                        trans.Commit();
+                        
                     }
 
                 }

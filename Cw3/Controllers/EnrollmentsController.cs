@@ -35,14 +35,13 @@ namespace Cw3.Controllers
             Console.WriteLine(czyIstnieje);
             if (!czyIstnieje) return BadRequest();
 
-            return StatusCode(201);
+            return Ok();
         }
 
-
-        [HttpPost ("promotions")]
-        public IActionResult upgradeStudent([FromBody] Studie studies)
+        [HttpPost("promotions")]
+        public IActionResult upgradeStudent([FromBody] Studie studie)
         {
-            if (studies.Studies == null || studies.Semester == null) return BadRequest();
+            if (studie.Studies == null || studie.Semester == null) return BadRequest();
 
 
             return Accepted();
