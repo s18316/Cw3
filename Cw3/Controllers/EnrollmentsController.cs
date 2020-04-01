@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cw3.Models;
+using Cw3.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,12 +14,11 @@ namespace Cw3.Controllers
     public class EnrollmentsController : ControllerBase
     {
 
-        private readonly IDbService _dbService;
+        private IStudentsDbService _dbService;
 
-        public EnrollmentsController(IDbService dbService)
+        public EnrollmentsController(IStudentsDbService dbService)
         {
             _dbService = dbService;
-
 
         }
 
@@ -39,6 +39,7 @@ namespace Cw3.Controllers
         public IActionResult upgreadStudent(Student student)
         {
             if (student.Studies == null || student.Semester == null) return BadRequest();
+            bool czyIstnieje = _dbService.CheckStudies(student.Studies);
 
             return Accepted();
         }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Cw3.Services
 {
-    interface IStudentsDbService
+    public interface IStudentsDbService
     {
         public bool CheckStudies(string studiesName);
 

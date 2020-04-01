@@ -1,3 +1,4 @@
+using Cw3.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,7 @@ namespace Cw3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IStudentsDbService, SqlServerDbService>();
             services.AddSingleton<IDbService, MockDbservice>();
             services.AddControllers();
         }
