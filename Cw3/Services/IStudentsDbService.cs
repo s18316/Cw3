@@ -10,8 +10,8 @@ namespace Cw3.Services
     public interface IStudentsDbService
     {
         public bool Rejestracja(string studiesName, Student student);
-        public void DodStudenta(Student student, SqlCommand com);
-        public void DodPrzedmiot(String nazwa, SqlCommand com);
+        public void DodStudenta(Student student, SqlCommand com, int IdEnrollment);
+        
 
 
     }
