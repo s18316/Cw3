@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Cw3.Models;
 
 namespace Cw3.Services
 {
     public interface IStudentsDbService
     {
-        public bool CheckStudies(string studiesName);
+        public bool Rejestracja(string studiesName, Student student);
+        public void DodStudenta(Student student, SqlCommand com);
+        public void DodPrzedmiot(String nazwa, SqlCommand com);
 
 
     }

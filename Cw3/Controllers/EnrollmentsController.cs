@@ -23,23 +23,27 @@ namespace Cw3.Controllers
         }
 
         [HttpPost]
-        public IActionResult PutStudentOnSemester(Student student)
+        public IActionResult PutStudentOnSemester([FromBody]Student student)
         {
+            Console.WriteLine(student.Studies);
             if (student.FirstName == null || student.LastName == null || student.Studies == null ||
                 student.IndexNumber == null || student.BirthDate == null)
             {
                 return BadRequest();
             }
-
+            bool czyIstnieje = _dbService.CheckStudies(student.Studies);
+            Console.WriteLine(czyIstnieje);
+            if (!czyIstnieje) return BadRequest();
 
             return Accepted();
         }
 
-        [HttpPost]
-        public IActionResult upgreadStudent(Student student)
+       
+        public IActionResult upgradeStudent(Student student)
         {
             if (student.Studies == null || student.Semester == null) return BadRequest();
-            bool czyIstnieje = _dbService.CheckStudies(student.Studies);
+           
+           
 
             return Accepted();
         }
