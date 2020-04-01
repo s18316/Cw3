@@ -31,7 +31,7 @@ namespace Cw3.Controllers
             {
                 return BadRequest();
             }
-            bool czyIstnieje = _dbService.CheckStudies(student.Studies);
+            bool czyIstnieje = _dbService.Rejestracja(student.Studies, student);
             Console.WriteLine(czyIstnieje);
             if (!czyIstnieje) return BadRequest();
 

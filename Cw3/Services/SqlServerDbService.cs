@@ -20,8 +20,8 @@ namespace Cw3.Services
             {
                 Console.WriteLine(studiesName);
                 com.Connection = con;
-                com.CommandText = "Select * from Studies where Studies.Name = @studiesName;";
-                com.Parameters.AddWithValue("studiesName", studiesName);
+                com.CommandText = "Select * from Studies where Studies.Name = @studiesName1;";
+                com.Parameters.AddWithValue("studiesName1", studiesName);
 
                 con.Open();
 
@@ -31,6 +31,8 @@ namespace Cw3.Services
                 czy = ans.Read();
                 com.CommandText = "Select * from Student where IndexNumber = @IndexNumer; ";
                 com.Parameters.AddWithValue("IndexNumer", student.IdStudent);
+
+                ans.Close();
                 ans = com.ExecuteReader();
                 if (ans.Read()) czy = false;
 
@@ -39,9 +41,10 @@ namespace Cw3.Services
                     //sprawdzanie czy jest pierwszy semestr danego kierunku
                     com.CommandText = "Select TOP 1 * from Enrollment  " +
                                       "inner join Studies on Studies.IdStudy = Enrollment.IdStudy " +
-                                      "where Name = @studiesName AND Semester = 1" +
+                                      "where Name = @studiesName2 AND Semester = 1" +
                                       " Order by StartDate Desc;";
-                    com.Parameters.AddWithValue("studiesName", studiesName);
+                    com.Parameters.AddWithValue("studiesName2", studiesName);
+                    ans.Close();
                     ans = com.ExecuteReader();
 
                     int IdEnrollment;
@@ -52,13 +55,15 @@ namespace Cw3.Services
                     {
                         com.CommandText =
                             "DECLARE @idStudy int = (SELECT Studies.IdStudy FROM Studies" +
-                            " WHERE Studies.Name = @studiesName); " +
-                            "DECLARE @idEnrollment = (SELECT TOP 1 Enrollment.IdEnrollment FROM Enrollment " +
+                            " WHERE Studies.Name = @studiesName3); " +
+                            "DECLARE @idEnrollment int = (SELECT TOP 1 Enrollment.IdEnrollment FROM Enrollment " +
                             "ORDER BY Enrollment.IdEnrollment DESC) + 1; " +
                             "INSERT INTO Enrollment(IdEnrollment, Semester, IdStudy, StartDate)" +
                             " VALUES(@idEnrollment, 1, @idStudy, CURRENT_TIMESTAMP); " +
                             "Select @idEnrollment";
+                        com.Parameters.AddWithValue("studiesName3", studiesName);
 
+                        ans.Close();
                         ans = com.ExecuteReader();
                         ans.Read();
                         IdEnrollment = ans.GetInt32(0);
@@ -68,8 +73,11 @@ namespace Cw3.Services
                         IdEnrollment = ans.GetInt32(0);
                     }
 
+                    ans.Close();
                     DodStudenta(student,com,IdEnrollment);
 
+                    ans.Close();
+                    con.Close();
 
 
                 }
@@ -83,7 +91,7 @@ namespace Cw3.Services
         public void DodStudenta(Student student, SqlCommand com, int IdEnrollment)
         {
             com.CommandText = "Insert into Student (IndexNumber,FirstName,LastName,BirthDate, IdEnrollment)" +
-                              " Values (@IndexNumber, @FirstName, @LastName, @BirthDate, @IdEnrollment);";
+                              " Values (@IndexNumber, @FirstName, @LastName, PARSE(@BirthDate as date USING 'en-GB'), @IdEnrollment);";
 
                                 com.Parameters.AddWithValue("IndexNumber", student.IndexNumber);
                                 com.Parameters.AddWithValue("FirstName", student.FirstName);
@@ -91,7 +99,8 @@ namespace Cw3.Services
                                 com.Parameters.AddWithValue("BirthDate", student.BirthDate);
                                 com.Parameters.AddWithValue("IdEnrollment", IdEnrollment);
 
-                                var ans = com.ExecuteReader();
+                                com.ExecuteNonQuery();
+                                
         }
 
 
