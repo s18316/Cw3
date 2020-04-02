@@ -7,7 +7,7 @@ namespace Cw3.Models
 {
     public class Studie
     {
-        public string Semester { get; set; }
+        public int Semester { get; set; }
         public string Studies { get; set; }
     }
 }

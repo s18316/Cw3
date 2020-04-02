@@ -121,6 +121,11 @@ namespace Cw3.Services
                                 com.ExecuteNonQuery();
                                 
         }
+        public void PromoteStudents(int semester, string studies)
+        {
+
+            throw new NotImplementedException();
+        }
 
 
     }
