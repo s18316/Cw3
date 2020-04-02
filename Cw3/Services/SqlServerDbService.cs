@@ -125,11 +125,12 @@ namespace Cw3.Services
                                 com.ExecuteNonQuery();
                                 
         }
-        public void PromoteStudents(int semester, string studies)
+        public Enrollment PromoteStudents(int semester, string studies)
         {
 
             SqlTransaction trans = null;
 
+            Enrollment enrollment = new Enrollment();
             using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18316;Integrated Security=True"))
             using (var com = new SqlCommand())
             {
@@ -140,7 +141,16 @@ namespace Cw3.Services
                 com.Parameters.AddWithValue("Studies", studies);
                 com.Parameters.AddWithValue("Semester", semester);
 
+                var ans = com.ExecuteReader();
+                ans.Read();
+
+                enrollment.IdEndrollment = ans.GetString(0);
+                enrollment.Semester = ans.GetString(1);
+                enrollment.IdStudy = ans.GetString(2);
+                enrollment.StartDate = ans.GetString(3);
+
             }
+            return enrollment;
 
         }
 

@@ -12,7 +12,7 @@ namespace Cw3.Services
     {
         public bool Rejestracja(string studiesName, Student student);
         public void DodStudenta(Student student, SqlCommand com, int IdEnrollment);
-        public void PromoteStudents(int semester, string studies);
+        public Enrollment PromoteStudents(int semester, string studies);
 
 
 
