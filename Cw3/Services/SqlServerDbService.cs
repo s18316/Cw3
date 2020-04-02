@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using Cw3.Models;
 
@@ -16,10 +17,12 @@ namespace Cw3.Services
                 Enrollment newEnroll = null;
                 try
                 {
-                    Console.WriteLine(studiesName);
+                   // Console.WriteLine(studiesName);
                      com.Connection = con;
                     con.Open();
                  trans = con.BeginTransaction();
+                 com.Transaction = trans;
+
                     com.CommandText = "Select * from Studies where Studies.Name = @studiesName1;";
                     com.Parameters.AddWithValue("studiesName1", studiesName);
 
@@ -79,8 +82,8 @@ namespace Cw3.Services
                         ans.Close();
 
                         //odstatni element zadania 1
-                        com.CommandText = "Select * from Enrollment where Enrollment.IdEnrollment = @IdEndrollment";
-                        com.Parameters.AddWithValue("IdEnrollment", IdEnrollment);
+                        com.CommandText = "Select * from Enrollment where IdEnrollment = @IdEndrollment";
+                         com.Parameters.AddWithValue("IdEnrollment", IdEnrollment);
                          newEnroll = new Enrollment();
                         ans = com.ExecuteReader();
                         ans.Read();
@@ -96,6 +99,7 @@ namespace Cw3.Services
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e);
                     trans.Rollback();
                     return false;
                 }
@@ -124,7 +128,20 @@ namespace Cw3.Services
         public void PromoteStudents(int semester, string studies)
         {
 
-            throw new NotImplementedException();
+            SqlTransaction trans = null;
+
+            using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18316;Integrated Security=True"))
+            using (var com = new SqlCommand())
+            {
+                com.Connection = con;
+                con.Open();
+                com.CommandType = CommandType.StoredProcedure;
+                com.CommandText = "PromoteStudents";
+                com.Parameters.AddWithValue("Studies", studies);
+                com.Parameters.AddWithValue("Semester", semester);
+
+            }
+
         }
 
 
