@@ -31,11 +31,13 @@ namespace Cw3.Controllers
             {
                 return BadRequest();
             }
-            bool czyIstnieje = _dbService.Rejestracja(student.Studies, student);
+            Enrollment czyIstnieje = _dbService.Rejestracja(student.Studies, student);
             Console.WriteLine(czyIstnieje);
-            if (!czyIstnieje) return BadRequest();
+            if (czyIstnieje == null) return BadRequest();
 
-            return Ok();
+            ObjectResult ob = new ObjectResult(czyIstnieje);
+            ob.StatusCode = 201;
+            return ob ;
         }
 
         [HttpPost("promotions")]
@@ -44,7 +46,7 @@ namespace Cw3.Controllers
             if (studie.Studies == null || studie.Semester == null) return BadRequest();
 
           ObjectResult ob = new ObjectResult(new SqlServerDbService().PromoteStudents(studie.Semester, studie.Studies));
-
+          ob.StatusCode = 201;
             return ob;
         }
     }

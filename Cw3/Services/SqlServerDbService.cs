@@ -7,14 +7,15 @@ namespace Cw3.Services
 {
     public class SqlServerDbService :IStudentsDbService
     {
-        public bool Rejestracja(string studiesName, Student student)
+        public Enrollment Rejestracja(string studiesName, Student student)
         {
+            Enrollment newEnroll = null;
             bool czy;
             using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18316;Integrated Security=True"))
             using (var com = new SqlCommand())
             {
                 SqlTransaction trans = null;
-                Enrollment newEnroll = null;
+                
                 try
                 {
                    // Console.WriteLine(studiesName);
@@ -59,11 +60,11 @@ namespace Cw3.Services
                             com.CommandText =
                                 "DECLARE @idStudy int = (SELECT Studies.IdStudy FROM Studies" +
                                 " WHERE Studies.Name = @studiesName3); " +
-                                "DECLARE @idEnrollment int = (SELECT TOP 1 Enrollment.IdEnrollment FROM Enrollment " +
+                                "DECLARE @idEnrollment2 int = (SELECT TOP 1 Enrollment.IdEnrollment FROM Enrollment " +
                                 "ORDER BY Enrollment.IdEnrollment DESC) + 1; " +
                                 "INSERT INTO Enrollment(IdEnrollment, Semester, IdStudy, StartDate)" +
-                                " VALUES(@idEnrollment, 1, @idStudy, CURRENT_TIMESTAMP); " +
-                                "Select @idEnrollment";
+                                " VALUES(@idEnrollment2, 1, @idStudy, CURRENT_TIMESTAMP); " +
+                                "Select @idEnrollment2";
                             com.Parameters.AddWithValue("studiesName3", studiesName);
 
                             ans.Close();
@@ -75,15 +76,15 @@ namespace Cw3.Services
                         {
                             IdEnrollment = ans.GetInt32(0);
                         }
-
+                        com.Parameters.AddWithValue("IdEnrollment", IdEnrollment);
                         ans.Close();
                         DodStudenta(student, com, IdEnrollment);
 
                         ans.Close();
 
                         //odstatni element zadania 1
-                        com.CommandText = "Select * from Enrollment where IdEnrollment = @IdEndrollment";
-                         com.Parameters.AddWithValue("IdEnrollment", IdEnrollment);
+                        com.CommandText = "Select * from Enrollment where IdEnrollment = @IdEnrollment";
+                       
                          newEnroll = new Enrollment();
                         ans = com.ExecuteReader();
                         ans.Read();
@@ -91,7 +92,7 @@ namespace Cw3.Services
                         newEnroll.Semester = ans[1].ToString();
                         newEnroll.IdStudy = ans[2].ToString();
                         newEnroll.StartDate = ans[3].ToString();
-
+                        ans.Close();
 ;                        trans.Commit();
                         
                     }
@@ -101,12 +102,12 @@ namespace Cw3.Services
                 {
                     Console.WriteLine(e);
                     trans.Rollback();
-                    return false;
+                    return null;
                 }
 
 
             }
-                return czy;
+                return newEnroll;
         }
 
 
@@ -120,8 +121,7 @@ namespace Cw3.Services
                                 com.Parameters.AddWithValue("FirstName", student.FirstName);
                                 com.Parameters.AddWithValue("LastName", student.LastName);
                                 com.Parameters.AddWithValue("BirthDate", student.BirthDate);
-                                com.Parameters.AddWithValue("IdEnrollment", IdEnrollment);
-
+                              
                                 com.ExecuteNonQuery();
                                 
         }
@@ -149,6 +149,7 @@ namespace Cw3.Services
                 enrollment.IdStudy = ans.GetInt32(2)+"";
                 enrollment.StartDate = ans[3].ToString();
 
+                ans.Close();
             }
             return enrollment;
 
