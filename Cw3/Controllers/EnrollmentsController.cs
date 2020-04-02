@@ -43,9 +43,9 @@ namespace Cw3.Controllers
         {
             if (studie.Studies == null || studie.Semester == null) return BadRequest();
 
-            new SqlServerDbService().PromoteStudents(studie.Semester, studie.Studies);
+          ObjectResult ob = new ObjectResult(new SqlServerDbService().PromoteStudents(studie.Semester, studie.Studies));
 
-            return Ok();
+            return ob;
         }
     }
 }

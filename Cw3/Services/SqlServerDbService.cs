@@ -144,10 +144,10 @@ namespace Cw3.Services
                 var ans = com.ExecuteReader();
                 ans.Read();
 
-                enrollment.IdEndrollment = ans.GetString(0);
-                enrollment.Semester = ans.GetString(1);
-                enrollment.IdStudy = ans.GetString(2);
-                enrollment.StartDate = ans.GetString(3);
+                enrollment.IdEndrollment = ans.GetInt32(0)+"";
+                enrollment.Semester = ans.GetInt32(1)+"";
+                enrollment.IdStudy = ans.GetInt32(2)+"";
+                enrollment.StartDate = ans[3].ToString();
 
             }
             return enrollment;
