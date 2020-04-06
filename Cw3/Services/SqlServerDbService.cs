@@ -111,6 +111,7 @@ namespace Cw3.Services
         }
 
 
+        
         public void DodStudenta(Student student, SqlCommand com, int IdEnrollment)
         {
             com.CommandText = "Declare @datetyp date = Parse(@BirthDate as date Using 'en-GB'); " +
@@ -155,6 +156,25 @@ namespace Cw3.Services
 
         }
 
+        public bool CzyInstnieje(string index)
+        {
+            bool czyIstnieje = false;
+            using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18316;Integrated Security=True"))
+            using (var com = new SqlCommand())
+            {
+                com.Connection = con;
+                com.CommandText = "Select IndexNumber FROM Student WHERE IndexNumber = @IndexNumber; ";
+                com.Parameters.AddWithValue("IndexNumber", index);
 
+                con.Open();
+
+                var dr = com.ExecuteReader();
+                if (dr.Read()) czyIstnieje = true;
+
+
+            }
+
+            return czyIstnieje;
+        }
     }
 }

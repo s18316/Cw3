@@ -14,7 +14,7 @@ namespace Cw3.Services
         public void DodStudenta(Student student, SqlCommand com, int IdEnrollment);
         public Enrollment PromoteStudents(int semester, string studies);
 
-
+        public bool CzyInstnieje(string index);
 
 
     }
