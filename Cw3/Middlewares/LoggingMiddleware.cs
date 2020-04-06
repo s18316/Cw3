@@ -19,10 +19,11 @@ namespace Cw3.Middlewares
 
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            //our code
-            //
+            httpContext.Request.EnableBuffering();
+
             var tmp = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
             StringBuilder sb = new StringBuilder();
+         
 
             var bodyStream = string.Empty;
             using (var reader = new StreamReader(httpContext.Request.Body, Encoding.UTF8, true, 1024, true))
@@ -39,7 +40,9 @@ namespace Cw3.Middlewares
             sb.Append(httpContext.Request.QueryString);
 
              File.AppendAllText(tmp +"\\logMid.txt" , sb.ToString());
-               
+             
+             httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+
             await _next(httpContext);
         }
     }
