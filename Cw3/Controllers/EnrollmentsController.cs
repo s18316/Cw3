@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cw3.Models;
 using Cw3.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,8 @@ namespace Cw3.Controllers
         }
 
         [HttpPost]
-        public IActionResult PutStudentOnSemester([FromBody]Student student)
+        [Authorize(Roles ="employee")]
+        public IActionResult EnrollStudent([FromBody]Student student)
         {
             Console.WriteLine(student.Studies);
             if (student.FirstName == null || student.LastName == null || student.Studies == null ||
@@ -41,7 +43,8 @@ namespace Cw3.Controllers
         }
 
         [HttpPost("promotions")]
-        public IActionResult upgradeStudent([FromBody] Studie studie)
+        [Authorize(Roles = "employee")]
+        public IActionResult PromoteStudent([FromBody] Studie studie)
         {
             if (studie.Studies == null || studie.Semester == null) return BadRequest();
 

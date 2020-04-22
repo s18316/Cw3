@@ -1,8 +1,16 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Cw3.DTOs;
 using Cw3.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Cw3.Controllers
 {
@@ -13,9 +21,12 @@ namespace Cw3.Controllers
     {
         private readonly IDbService _dbService;
 
-        public StudentsController(IDbService dbService)
+        public IConfiguration Configuration { get; set; }
+
+        public StudentsController(IDbService dbService, IConfiguration configuration)
         {
             _dbService = dbService;
+            Configuration = configuration;
 
         }
         [HttpDelete]
@@ -29,6 +40,43 @@ namespace Cw3.Controllers
         {
             return Ok("Aktualizacja dokończona");
         }
+
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Login(LoginRequestDto request)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(ClaimTypes.Name, "jan123"),
+                new Claim(ClaimTypes.Role, "admin"),
+                new Claim(ClaimTypes.Role, "student")
+
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256 ); // podpis
+
+            var token = new JwtSecurityToken(
+                issuer: "Gakko",
+                audience:"Students",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(10),
+                signingCredentials:creds
+
+                );
+
+
+
+            return Ok(new
+            {
+                //tekstowa reprezentacja
+                token = new JwtSecurityTokenHandler().WriteToken(token), // 5- 10 min
+                refreshToken = Guid.NewGuid() //
+            });
+        }
+
 
 
         [HttpGet]

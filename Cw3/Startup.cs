@@ -1,7 +1,10 @@
 using System.IO;
 using System.Text;
+using Cw3.Handlers;
 using Cw3.Middlewares;
 using Cw3.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +12,7 @@ using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Cw3
 {
@@ -24,10 +28,28 @@ namespace Cw3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+           // services.AddAuthentication("AuthenticationBasic")
+             //   .AddScheme<AuthenticationSchemeOptions, AuthHandler>("AuthenticationBasic", null);
+
+             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                 .AddJwtBearer(options =>
+                 {
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+
+                         ValidateIssuer = true,
+                         ValidateAudience = true,
+                         ValidateLifetime = true,
+                         ValidIssuer = "Gakko",
+                         ValidAudience = "Students",
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]))
+                     };
+                 });
+                     
 
             services.AddScoped<IStudentsDbService, SqlServerDbService>();
             services.AddSingleton<IDbService, MockDbservice>();
-            services.AddControllers();
+            services.AddControllers().AddXmlSerializerFormatters();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +91,8 @@ namespace Cw3
             });
            
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
