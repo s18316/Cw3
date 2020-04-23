@@ -44,38 +44,68 @@ namespace Cw3.Controllers
 
         [HttpPost]
         [Authorize]
+
         public IActionResult Login(LoginRequestDto request)
         {
-            var claims = new[]
+
+
+            //sprawdzanie czy podany index i haslo jest poprawne
+
+            using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18316;Integrated Security=True"))
+            using (var com = new SqlCommand())
             {
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(ClaimTypes.Name, "jan123"),
-                new Claim(ClaimTypes.Role, "admin"),
-                new Claim(ClaimTypes.Role, "student")
+                com.Connection = con;
+                com.CommandText =
+                    "select 1 from Student where IndexNumber = @index And Password = @haslo; ";
+                com.Parameters.AddWithValue("index", request.Login);
+                com.Parameters.AddWithValue("haslo", request.Haslo);
 
-            };
+                con.Open();
+                var dr = com.ExecuteReader();
+                if (dr.Read())
+                {
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256 ); // podpis
+                    var claims = new[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, "1"),
+                        new Claim(ClaimTypes.Name, "jan123"),
+                        new Claim(ClaimTypes.Role, "admin"),
+                        new Claim(ClaimTypes.Role, "student"),
+                        new Claim(ClaimTypes.Role, "emplyee")
 
-            var token = new JwtSecurityToken(
-                issuer: "Gakko",
-                audience:"Students",
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(10),
-                signingCredentials:creds
+                    };
 
-                );
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]));
+                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); // podpis
+
+                    var token = new JwtSecurityToken(
+                        issuer: "Sasha",
+                        audience: "Students",
+                        claims: claims,
+                        expires: DateTime.Now.AddMinutes(10),
+                        signingCredentials: creds
+
+                    );
 
 
 
-            return Ok(new
-            {
-                //tekstowa reprezentacja
-                token = new JwtSecurityTokenHandler().WriteToken(token), // 5- 10 min
-                refreshToken = Guid.NewGuid() //
-            });
+                    return Ok(new
+                    {
+                        //tekstowa reprezentacja
+                        token = new JwtSecurityTokenHandler().WriteToken(token), // 5- 10 min
+                        refreshToken = Guid.NewGuid() //
+                    });
+                }
+                else
+                {
+                    return BadRequest("podany index lub haslo jest niepoprawne");
+                }
+            }
+
         }
+
+
+
 
 
 

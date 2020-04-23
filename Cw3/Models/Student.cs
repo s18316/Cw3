@@ -14,5 +14,6 @@ namespace Cw3.Models
         public string BirthDate { get; set; }
         public string Semester { get; set; }
         public string Studies { get; set; }
+        public string Password { get; set; }
     }
 }
