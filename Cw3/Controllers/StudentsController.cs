@@ -73,8 +73,10 @@ namespace Cw3.Controllers
 
                 var pass = dr[0].ToString();
 
-                var hash = Create(request.Haslo, salt);
-                if (!Validate(pass, salt, hash)) return BadRequest("bledne haslo");
+               
+
+                if (!Validate(request.Haslo, salt, pass)) return BadRequest("bledne haslo");
+                    
 
                 var claims = new[]
                 {
