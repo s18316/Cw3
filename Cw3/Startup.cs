@@ -62,7 +62,7 @@ namespace Cw3
             //
           // app.UseHttpsRedirection();
           //sprawdzanie/obrabianie otrzymanych danych
-            app.UseMiddleware<LoggingMiddleware>();
+          //  app.UseMiddleware<LoggingMiddleware>();
 
 
             app.Use(async (context, next)=>

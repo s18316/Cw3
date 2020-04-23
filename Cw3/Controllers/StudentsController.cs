@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Cw3.DTOs;
 using Cw3.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -43,7 +46,7 @@ namespace Cw3.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        [Route("logowanie")]
 
         public IActionResult Login(LoginRequestDto request)
         {
@@ -55,15 +58,31 @@ namespace Cw3.Controllers
             using (var com = new SqlCommand())
             {
                 com.Connection = con;
-                com.CommandText =
-                    "select 1 from Student where IndexNumber = @index And Password = @haslo; ";
+                com.CommandText = "select salt from Student where IndexNumber = @index;";
                 com.Parameters.AddWithValue("index", request.Login);
-                com.Parameters.AddWithValue("haslo", request.Haslo);
-
+                
                 con.Open();
                 var dr = com.ExecuteReader();
+                if (!dr.Read())
+                {
+                    return BadRequest("nie ma osoby o podamym indeksie");
+                }
+
+                var salt = dr[0].ToString();
+                con.Close();
+
+                 
+
+                com.CommandText =
+                    "select Password from Student where IndexNumber = @index ";
+                con.Open();
+                 dr = com.ExecuteReader();
                 if (dr.Read())
                 {
+                    var pass = dr[0].ToString();
+
+                    var hash = Create(request.Haslo, salt);
+                    if (!Validate(pass,salt,hash)) return BadRequest("bledne haslo");
 
                     var claims = new[]
                     {
@@ -96,14 +115,71 @@ namespace Cw3.Controllers
                         refreshToken = Guid.NewGuid() //
                     });
                 }
-                else
-                {
+            }
+
+            //jezeli nie ma
                     return BadRequest("podany index lub haslo jest niepoprawne");
-                }
+
+
+        }
+
+        [HttpPost("refresh-token/{token")]
+
+        public IActionResult RefreshToken(string refToken)
+        {
+
+            using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=s18316;Integrated Security=True"))
+            using (var com = new SqlCommand())
+            {
+                com.Connection = con;
+                con.Open();
+                com.CommandText = "SELECT 1 FROM Student WHERE refToken = @refToken";
+                com.Parameters.AddWithValue("refToken", refToken);
+                var dr = com.ExecuteReader();
+
+                if (dr.Read()) return Ok();
+
+                return BadRequest("nie ma danego tokena w bazie");
             }
 
         }
 
+
+        //tworzenie hashu i soli
+
+        public static string Create(string value, string salt)
+        {
+            var valueBytes = KeyDerivation.Pbkdf2(
+
+                password: value,
+                salt: Encoding.UTF8.GetBytes(salt),
+                prf: KeyDerivationPrf.HMACSHA512,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8
+            );
+            return Convert.ToBase64String(valueBytes);
+        }
+
+      
+
+        public static bool Validate(string value, string salt, string hash)
+        
+            => Create(value, salt) == hash;
+        
+  public static string CreateSalt()
+        {
+            byte[] randomBytes = new byte[128 / 8];
+            using (var generator = RandomNumberGenerator.Create())
+            {
+                generator.GetBytes(randomBytes);
+                return Convert.ToBase64String(randomBytes);
+            }
+        }
+
+
+
+
+  //////////
 
 
 
