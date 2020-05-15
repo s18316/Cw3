@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cw3.Models;
-using Cw3.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +14,9 @@ namespace Cw3.Controllers
     public class EnrollmentsController : ControllerBase
     {
 
-        private IStudentsDbService _dbService;
+        private IDbService _dbService;
 
-        public EnrollmentsController(IStudentsDbService dbService)
+        public EnrollmentsController(IDbService dbService)
         {
             _dbService = dbService;
 
@@ -33,13 +32,15 @@ namespace Cw3.Controllers
             {
                 return BadRequest();
             }
-            Enrollment czyIstnieje = _dbService.Rejestracja(student.Studies, student);
-            Console.WriteLine(czyIstnieje);
-            if (czyIstnieje == null) return BadRequest();
 
-            ObjectResult ob = new ObjectResult(czyIstnieje);
-            ob.StatusCode = 201;
-            return ob ;
+           // Enrollment czyIstnieje = _dbService.Rejestracja(student.Studies, student);
+          //  Console.WriteLine(czyIstnieje);
+          //  if (czyIstnieje == null) return BadRequest();
+
+         //   ObjectResult ob = new ObjectResult(czyIstnieje);
+           // ob.StatusCode = 201;
+           //return ob ;
+           return null;
         }
 
         [HttpPost("promotions")]
@@ -48,9 +49,10 @@ namespace Cw3.Controllers
         {
             if (studie.Studies == null || studie.Semester == null) return BadRequest();
 
-          ObjectResult ob = new ObjectResult(new SqlServerDbService().PromoteStudents(studie.Semester, studie.Studies));
-          ob.StatusCode = 201;
-            return ob;
+        //  ObjectResult ob = new ObjectResult(new SqlServerDbService().PromoteStudents(studie.Semester, studie.Studies));
+        //  ob.StatusCode = 201;
+           // return ob;
+           return null;
         }
     }
 }
