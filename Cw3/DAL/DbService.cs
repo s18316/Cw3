@@ -85,14 +85,14 @@ public class Dbservice : IDbService
         if (aktStudent != null) return null;
 
         //czy isnieja takie studia
-        var stu =  _dbContext.Studies.FirstOrDefault(s => s.Name == studies);
+        var stu = _dbContext.Studies.FirstOrDefault(s => s.Name == studies);
         if (stu == null) return null;
 
         //czy te studia maja pierwszy semestr
         var aktStudies = _dbContext.Enrollment.SingleOrDefault(s => s.IdStudy == stu.IdStudy && s.Semester == 1);
         if (aktStudies == null)
         {
-             var idEnrollment = _dbContext.Enrollment.Max(e => e.IdEnrollment) + 1;
+            var idEnrollment = _dbContext.Enrollment.Max(e => e.IdEnrollment) + 1;
             aktStudies = new Enrollment
             {
                 IdEnrollment = idEnrollment,
@@ -106,20 +106,19 @@ public class Dbservice : IDbService
         //dodawanie studenta na kierunek
         Student studencik = new Student
         {
-   IndexNumber = student.IndexNumber,
-    FirstName = student.FirstName,
-    LastName  = student.LastName,
-    BirthDate = student.BirthDate,
-    IdEnrollment = aktStudies.IdEnrollment,
-    Salt  = 
-   RefToken =
-     Password = 
-};
+            IndexNumber = student.IndexNumber,
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            BirthDate = student.BirthDate,
+            IdEnrollment = aktStudies.IdEnrollment,
+            Salt = "123qwert",
+            RefToken = "705897C2-1284-4E23-A196-46EF620695EE",
+            Password = "TKDduvvye76VWFg2xuoeO5j/ZBG9VaLgNoJSJ3MLV8I="
+        };
 
         _dbContext.Student.Add(studencik);
         //
         return null;
-        
     }
 
 
@@ -129,7 +128,8 @@ public class Dbservice : IDbService
 
         //sprawdzanie czy isnieje kolejny semestr danego przedmiotu
 
-        var enrollment = _dbContext.Enrollment.SingleOrDefault(en => en.IdStudy == studies.IdStudy && en.Semester == semester + 1);
+        var enrollment =
+            _dbContext.Enrollment.SingleOrDefault(en => en.IdStudy == studies.IdStudy && en.Semester == semester + 1);
 
         if (enrollment == null)
         {
@@ -148,11 +148,12 @@ public class Dbservice : IDbService
         }
 
         //wybranie studentow ktorzy maja byc przeniesieni na kolejny semestr
-        var aktEnrollment = _dbContext.Enrollment.Single(en => en.IdStudy == studies.IdStudy && en.Semester == semester);
+        var aktEnrollment =
+            _dbContext.Enrollment.Single(en => en.IdStudy == studies.IdStudy && en.Semester == semester);
 
         var studenci = _dbContext.Student.Where(s => s.IdEnrollment == aktEnrollment.IdEnrollment).ToList();
 
-        foreach (Student student in studenci)  student.IdEnrollment = enrollment.IdEnrollment;
+        foreach (Student student in studenci) student.IdEnrollment = enrollment.IdEnrollment;
 
         _dbContext.SaveChanges();
 
