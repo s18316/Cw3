@@ -46,7 +46,7 @@ namespace Cw3.Controllers
         [HttpPost("promotions")]
    public IActionResult PromoteStudent([FromBody] Studie studie)
         {
-            if (studie.Studies == null || studie.Semester == null) return BadRequest();
+            if (studie.Studies == null || studie.Semester == 0) return BadRequest();
 
          ObjectResult ob = new ObjectResult(_dbService.PromoteStudents(studie.Semester, studie.Studies));
           ob.StatusCode = 201;

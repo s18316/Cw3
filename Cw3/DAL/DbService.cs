@@ -101,6 +101,7 @@ public class Dbservice : IDbService
                 StartDate = DateTime.Now
             };
             _dbContext.Enrollment.Add(aktStudies);
+            _dbContext.SaveChanges();
         }
 
         //dodawanie studenta na kierunek
@@ -117,6 +118,7 @@ public class Dbservice : IDbService
         };
 
         _dbContext.Student.Add(studencik);
+        _dbContext.SaveChanges();
         //
         return null;
     }
@@ -124,7 +126,8 @@ public class Dbservice : IDbService
 
     public Enrollment PromoteStudents(int semester, string name)
     {
-        var studies = _dbContext.Studies.Single(stu => stu.Name == name);
+        var studies = _dbContext.Studies.SingleOrDefault(stu => stu.Name == name);
+        if (studies == null) return null;
 
         //sprawdzanie czy isnieje kolejny semestr danego przedmiotu
 
@@ -145,6 +148,7 @@ public class Dbservice : IDbService
             };
 
             _dbContext.Enrollment.Add(enrollment);
+            _dbContext.SaveChanges();
         }
 
         //wybranie studentow ktorzy maja byc przeniesieni na kolejny semestr
@@ -152,6 +156,7 @@ public class Dbservice : IDbService
             _dbContext.Enrollment.Single(en => en.IdStudy == studies.IdStudy && en.Semester == semester);
 
         var studenci = _dbContext.Student.Where(s => s.IdEnrollment == aktEnrollment.IdEnrollment).ToList();
+
 
         foreach (Student student in studenci) student.IdEnrollment = enrollment.IdEnrollment;
 
