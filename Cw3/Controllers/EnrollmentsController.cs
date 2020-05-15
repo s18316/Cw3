@@ -25,7 +25,6 @@ namespace Cw3.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="employee")]
         public IActionResult EnrollStudent([FromBody]StudentToEnroll student)
         {
             Console.WriteLine(student.Studies);
