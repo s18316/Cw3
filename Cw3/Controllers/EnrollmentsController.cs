@@ -44,8 +44,7 @@ namespace Cw3.Controllers
         }
 
         [HttpPost("promotions")]
-        [Authorize(Roles = "employee")]
-        public IActionResult PromoteStudent([FromBody] Studie studie)
+   public IActionResult PromoteStudent([FromBody] Studie studie)
         {
             if (studie.Studies == null || studie.Semester == null) return BadRequest();
 
