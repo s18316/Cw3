@@ -8,4 +8,6 @@ public interface IDbService
 
     bool RemoveStudent(string id);
     bool ModifyStudent(Student student);
+    Enrollment PromoteStudents(int semester, string name);
+    Enrollment Enroll(string studies, StudentToEnroll student);
 }

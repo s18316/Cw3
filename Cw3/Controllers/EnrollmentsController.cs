@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cw3.Models;
+using Cw3.Models2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Enrollment = Cw3.Models2.Enrollment;
 
 namespace Cw3.Controllers
 {
@@ -24,7 +26,7 @@ namespace Cw3.Controllers
 
         [HttpPost]
         [Authorize(Roles ="employee")]
-        public IActionResult EnrollStudent([FromBody]Student student)
+        public IActionResult EnrollStudent([FromBody]StudentToEnroll student)
         {
             Console.WriteLine(student.Studies);
             if (student.FirstName == null || student.LastName == null || student.Studies == null ||
@@ -33,14 +35,13 @@ namespace Cw3.Controllers
                 return BadRequest();
             }
 
-           // Enrollment czyIstnieje = _dbService.Rejestracja(student.Studies, student);
-          //  Console.WriteLine(czyIstnieje);
-          //  if (czyIstnieje == null) return BadRequest();
+            Enrollment czyIstnieje = _dbService.Enroll(student.Studies, student);
+            Console.WriteLine(czyIstnieje);
+            if (czyIstnieje == null) return BadRequest();
 
-         //   ObjectResult ob = new ObjectResult(czyIstnieje);
-           // ob.StatusCode = 201;
-           //return ob ;
-           return null;
+            ObjectResult ob = new ObjectResult(czyIstnieje);
+            ob.StatusCode = 201;
+           return ob ;
         }
 
         [HttpPost("promotions")]
@@ -49,10 +50,9 @@ namespace Cw3.Controllers
         {
             if (studie.Studies == null || studie.Semester == null) return BadRequest();
 
-        //  ObjectResult ob = new ObjectResult(new SqlServerDbService().PromoteStudents(studie.Semester, studie.Studies));
-        //  ob.StatusCode = 201;
-           // return ob;
-           return null;
+         ObjectResult ob = new ObjectResult(_dbService.PromoteStudents(studie.Semester, studie.Studies));
+          ob.StatusCode = 201;
+            return ob;
         }
     }
 }
